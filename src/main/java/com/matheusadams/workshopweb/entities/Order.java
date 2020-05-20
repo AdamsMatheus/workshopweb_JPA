@@ -11,76 +11,94 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.matheusadams.workshopweb.entities.enums.OrderStatus;
+
 @Entity
-@Table(name ="tb_order")
+@Table(name = "tb_order")
 public class Order implements Serializable {
+	private static final long serialVersionUID = 1L;
 
-		private static final long serialVersionUID = 1L;
-		@Id
-		@GeneratedValue(strategy = GenerationType.IDENTITY)
-		private long id;
-		private Instant moment;
-		@ManyToOne
-		@JoinColumn(name = "cliente_id")
-		private User client;
-		
-		public Order() {
-			
-		}
-		
-		public Order(long id, Instant moment, User client) {
-			super();
-			
-			this.id = id;
-			this.moment = moment;
-		
-			this.client = client;
-		}
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-		public long getId() {
-			return id;
-		}
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT")
+	private Instant moment;
+	
+	private Integer orderStatus;
 
-		public void setId(long id) {
-			this.id = id;
-		}
+	@ManyToOne
+	@JoinColumn(name = "client_id")
+	private User client;
 
-		public Instant getMoment() {
-			return moment;
-		}
+	public Order() {
+	}
 
-		public void setMoment(Instant moment) {
-			this.moment = moment;
-		}
+	public Order(Long id, Instant moment, OrderStatus orderStatus, User client) {
+		super();
+		this.id = id;
+		this.moment = moment;
+		setOrderStatus(orderStatus);
+		this.client = client;
+	}
 
-		public User getClient() {
-			return client;
-		}
+	public Long getId() {
+		return id;
+	}
 
-		public void setClient(User client) {
-			this.client = client;
-		}
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + (int) (id ^ (id >>> 32));
-			return result;
-		}
+	public Instant getMoment() {
+		return moment;
+	}
 
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			Order other = (Order) obj;
-			if (id != other.id)
-				return false;
+	public void setMoment(Instant moment) {
+		this.moment = moment;
+	}
+
+	public User getClient() {
+		return client;
+	}
+
+	public void setClient(User client) {
+		this.client = client;
+	}
+
+	
+	
+	public OrderStatus getOrderStatus() {
+		return OrderStatus.valueof(orderStatus);
+	}
+
+	public void setOrderStatus(OrderStatus orderStatus) {
+		this.orderStatus = orderStatus.getCode();
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
 			return true;
-		}
-		
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Order other = (Order) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
+	}
 }
